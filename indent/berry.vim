@@ -15,28 +15,12 @@ set cpo&vim
 
 " Call GetBerryIndent() when '\s*end' is found on the current line
 setlocal indentkeys+=0=end,0=elif,0=else,0=except
-setlocal indentexpr=GetBerryIndent()
-
+setlocal indentexpr=s:GetBerryIndent()
 setlocal autoindent
 
 let b:undo_indent = "setlocal autoindent< indentexpr< indentkeys<"
 
-" Only define the function once.
-if exists("*GetBerryIndent")
-  finish
-endif
-
-function! GetBerryIndent()
-    let ignorecase_save = &ignorecase
-  try
-    let &ignorecase = 0
-    return GetBerryIndentInternal()
-  finally
-    let &ignorecase = ignorecase_save
-  endtry
-endfunction
-
-function! GetBerryIndentInternal()
+function s:GetBerryIndent()
   " Find a non-blank line above the current line.
   let prevlnum = prevnonblank(v:lnum - 1)
 
@@ -49,7 +33,7 @@ function! GetBerryIndentInternal()
   " class, def, if, elif, else, for, while, try, except, '{', '[', '('
   let ind = indent(prevlnum)
   let prevline = getline(prevlnum)
-  let midx = match(prevline, '^\v\s*%(class|def|if|elif|else|while|for|try|except)>')
+  let midx = match(prevline, '^\v\s*\C%(class|def|if|elif|else|while|for|try|except)>')
   if midx == -1
     let midx = match(prevline, '\v%(\{|\[|\()\s*%(#%([^\-].*)?)?$')
   endif
@@ -65,7 +49,7 @@ function! GetBerryIndentInternal()
   " Subtract a 'shiftwidth' on lines that end the previous block:
   " end, elif, else, except, '}', ']', ')'
   " This is the part that requires 'setlocal indentkeys'.
-  let midx = match(getline(v:lnum), '^\v\s*%(%(end|elif|else|except)>|}|]|\))')
+  let midx = match(getline(v:lnum), '^\v\s*%(\C%(end|elif|else|except)>|}|]|\))')
   if midx != -1 &&
     \ synIDattr(synID(v:lnum, midx + 1, 1), 'name') != 'berryMultiLineComment'
     let ind = ind - shiftwidth()
