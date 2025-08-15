@@ -10,8 +10,8 @@ endif
 
 let b:current_syntax = "berry"
 
-syntax keyword berryKeyword var static def class return
-syntax keyword berryKeyword self super import as class
+syntax keyword berryKeyword var static class def do
+syntax keyword berryKeyword self super import as
 highlight link berryKeyword Keyword
 
 syntax keyword berryBoolean true false nil
@@ -26,11 +26,17 @@ highlight link berryBuiltin Function
 syntax keyword berryConditional if else elif end
 highlight link berryConditional Conditional
 
-syntax keyword berryRepeat for while do
+syntax keyword berryRepeat for while
 highlight link berryRepeat Repeat
 
 syntax keyword berryException try except raise
+syntax keyword berryException assert_failed index_error io_error key_error
+syntax keyword berryException runtime_error stop_iteration syntax_error
+syntax keyword berryException unrealized_error type_error
 highlight link berryException Exception
+
+syntax keyword berryStatement break continue return
+highlight link berryStatement Statement
 
 syntax match berrySingleLineComment "#.*$"
 highlight link berrySingleLineComment Comment
